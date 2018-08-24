@@ -10,10 +10,31 @@ import React, { Component } from 'react';
 //         </React.Fragment>
 //     );
 //   }
-}
+// }
 
 const App = () => {
-    return <div>Hi!!</div>
+    const profiles = [
+        {name: "sasaki", age: 10},
+        {name: "masaki", age: 25},
+        {name: "who??"},
+    ]
+    return (
+      <div>
+          {
+              profiles.map((profile, index) => {
+                return <User name={profile.name} age={profile.age} key={index}/>
+              })
+          }
+      </div>
+    );
+}
+
+const User = (props) => {
+    return <div>Hi, {props.name}!, and {props.age} yrs old</div>
+}
+
+User.defaultProps = {
+    age: 1
 }
 
 export default App;
