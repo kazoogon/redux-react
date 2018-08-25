@@ -1,9 +1,17 @@
 import _ from 'lodash' //配列のデータを変えるのが得意なパッケージ
-import { READ_EVENTS } from '../actions'
+import {
+    READ_EVENTS ,
+    READ_EVENT,
+    DELETE_EVENT,
+    UPDATE_EVENT,
+    CREATE_EVENT,
+} from '../actions'
 
 export default (events = {}, action) => {
     switch(action.type){
         case READ_EVENTS:
+        case UPDATE_EVENT:
+        case CREATE_EVENT:
             /*
             [
                 {"id":1,"title":"Let's have an event 1!","body":"This is the body for event 1."},
@@ -16,6 +24,13 @@ export default (events = {}, action) => {
             }
             */
             return _.mapKeys(action.response.data, 'id')
+        case READ_EVENT:
+            const data = action.response.data
+            //response.dataでもらった値をevents objectの値にあてはめる(最新の情報にするってこと)
+            return {...events, [data.id]: data }
+        case DELETE_EVENT:
+            delete events[action.id]
+            return { ...events } //スプレッド演算子
         default:
             return events
     }

@@ -1,15 +1,20 @@
-//ここのReactはJSX->JSに変換で使用する
 import React, { Component } from 'react';
-import { connect } from 'react-redux'; //reduxのstoreからcomponentに値をもらえるようになるconnect関数
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
 import { Field, reduxForm } from 'redux-form'
 
-import { postEvent } from "../actions"; //必要な関数をactionからimport
+import { getEvent, deleteEvent, putEvent } from "../actions"; //必要な関数をactionからimport
 
-class EventsNew extends Component{
+class EventsShow extends Component{
     constructor(props){
         super(props)
         this.onSubmit = this.onSubmit.bind(this)
+        this.onDeleteClick = this.onDeleteClick.bind(this)
+    }
+
+    componentDidMount() {
+        const { id } = this.props.match.params
+        if(id) this.props.getEvent(id)
     }
 
     renderField(field){
@@ -24,8 +29,14 @@ class EventsNew extends Component{
         )
     }
 
+    async onDeleteClick(){
+        const { id } = this.props.match.params
+        await this.props.deleteEvent(id) //actionにidを渡す
+        this.props.history.push('/')
+    }
+
     async onSubmit(values){
-        await this.props.postEvent(values)
+        await this.props.putEvent(values)
         this.props.history.push('/')
     }
 
@@ -42,19 +53,13 @@ class EventsNew extends Component{
                 <div>
                     <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
                     <Link to="/">Cancel</Link>
+                    <Link to="/" onClick={this.onDeleteClick}>Delete</Link>
                 </div>
 
             </form>
         )
     }
 }
-
-// const mapDispatchToProps = dispatch => ({
-//     increment: () => dispatch(increment()),
-//     decrement: () => dispatch(decrement()),
-// })
-//↑と同じ
-// const mapDispatchToProps = ({ postEvents })
 
 const validate = values => {
     const errors = {}
@@ -65,8 +70,14 @@ const validate = values => {
     return errors
 }
 
-const mapDispatchToProps = ({ postEvent })
+const mapStateToProps = (state, ownProps) => {
+    const event = state.events[ownProps.match.params.id]
+    return { initialValues: event, event }
+}
 
-export default connect(null, mapDispatchToProps)(
-    reduxForm({validate, form: 'eventNewForm'})(EventsNew)
+const mapDispatchToProps = ({ deleteEvent, getEvent, putEvent }) //このcomponentにbind
+
+//enableReinitialize = trueだとinitailValuesのpropの値が変更されるたびに初期化される
+export default connect(mapStateToProps, mapDispatchToProps)(
+    reduxForm({validate, form: 'eventShowForm', enableReinitialize: true})(EventsShow)
 )
