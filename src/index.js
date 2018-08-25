@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'; //作成したstoreの値を全component
 import thunk from 'redux-thunk';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { composeWithDevTools } from 'redux-devtools-extension'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import './index.css';
 import reducer from './reducers'; //store作成のために必要なreducer
@@ -21,16 +22,18 @@ const enhancer = process.env.NODE_ENV === 'development' ?
 const store = createStore(reducer, enhancer);//thunkというmiddlewareをいつapplyするのか？　ここでしょ storeでしょ
 
 ReactDOM.render(
-    <Provider store={store}>{/* Providerのおかげで、どのcomponentからもstoreの値が見れる */}
-        <BrowserRouter>
-            <Switch>
-                <Route path="/events/new" component={EventsNew} />
-                <Route path="/events/:id" component={EventsShow} /> {/* 変数はコロン付ける */}
-                <Route exact path="/" component={EventsIndex} />
-                <Route exact path="/events" component={EventsIndex} />
-            </Switch>
-        </BrowserRouter>
-    </Provider>,
+    <MuiThemeProvider>
+        <Provider store={store}>{/* Providerのおかげで、どのcomponentからもstoreの値が見れる */}
+            <BrowserRouter>
+                <Switch>
+                    <Route path="/events/new" component={EventsNew} />
+                    <Route path="/events/:id" component={EventsShow} /> {/* 変数はコロン付ける */}
+                    <Route exact path="/" component={EventsIndex} />
+                    <Route exact path="/events" component={EventsIndex} />
+                </Switch>
+            </BrowserRouter>
+        </Provider>
+    </MuiThemeProvider>,
     document.getElementById('root')
 );
 registerServiceWorker();
