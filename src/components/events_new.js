@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'; //reduxのstoreからcomponentに値をもらえるようになるconnect関数
 import { Link } from 'react-router-dom'
 import { Field, reduxForm } from 'redux-form'
+import RaisedButton from 'material-ui/RaisedButton'
+import TextField from 'material-ui/TextField'
 
 import { postEvent } from "../actions"; //必要な関数をactionからimport
 
@@ -18,8 +20,14 @@ class EventsNew extends Component{
 
         return(
             <div>
-                <input {...input} placeholder={label} type={type} />
-                {touched && error && <span>{error}</span>}
+                <TextField
+                    hintText={label}
+                    floatingLabelText={label}
+                    type={type}
+                    errorText={touched && error}
+                    {...input}
+                    fullWidth={true}
+                />
             </div>
         )
     }
@@ -35,15 +43,14 @@ class EventsNew extends Component{
          ・2重押し回避に使う　submitting (submitしたらtrueになる)
         */
         const { handleSubmit, pristine, submitting, invalid} = this.props
+        const style = { margin: 12 }
         return (
             <form onSubmit={handleSubmit(this.onSubmit)}>
                 <div><Field label="Title" name="title" type="text" component={this.renderField} /></div>
                 <div><Field label="Body" name="body" type="text" component={this.renderField} /></div>
-                <div>
-                    <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
-                    <Link to="/">Cancel</Link>
-                </div>
 
+                <RaisedButton label="Submit" type="submit" style={style} disabled={pristine || submitting || invalid} />
+                <RaisedButton label="Cancel" style={style} containerElement={<Link to="/" />}/>
             </form>
         )
     }
